@@ -11,7 +11,10 @@ countRecursive <- function(dir, suffix) {
   files <- files[str_detect(files, suffix)]
   
   filesDT <<- rbind(filesDT, rbindlist(lapply(files, function(file) {
-    data.frame(fileName=file, length=length(readLines(file)))
+    fileLines <- readLines(file)
+    fileLines <- fileLines[!str_trim(fileLines) == ""]
+    data.frame(fileName=file, length=length(fileLines))
+    
   })), fill=T)
     
   if (length(dirs) > 0)  {
@@ -22,19 +25,14 @@ countRecursive <- function(dir, suffix) {
 }
 
 setwd("C://Users/cheta_000/Dropbox/")
-countRecursive(".", ".R$")
-countRecursive(".", ".java$")
-countRecursive(".", ".py$")
+countRecursive(".", "\\.R$|\\.java$|\\.py$|\\.cpp$|\\.h$")
 
-# deleting files i didn't write
+# deleting files in subdirectories i didn't write
 filesDT[str_detect(fileName,
-  "./College/3_Third Year/05_Fifth Semester/R Working Directory/3080_Lectures"),
+  "3080_Lectures|4021_lectures|old django|conflicted copy|hlda-cpp2|lda-c-dist|plda"),
   length:=0]
 filesDT[str_detect(fileName,
-  "./College/3_Third Year/05_Fifth Semester/R Working Directory/4021_lectures/"),
-  length:=0]
-filesDT[str_detect(fileName,
-  "snowball|json|opennlp|django-downloadview-master"),
+  "snowball|json|opennlp|django-downloadview-master|pdr|google|tango_w_django"),
   length:=0]
 
 filesDT[,"lang":=str_extract(fileName, "\\..{1,4}$")]
